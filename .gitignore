@@ -1,0 +1,80 @@
+####################################
+# GLOBAL
+####################################
+.env
+.env.*
+!.env.example
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.cache
+
+####################################
+# NODE / NEXT / SOCKET
+####################################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.next/
+out/
+dist/
+build/
+coverage/
+
+####################################
+# TYPESCRIPT
+####################################
+*.tsbuildinfo
+
+####################################
+# SOCKET.IO / EXPRESS
+####################################
+socket.naturechat/node_modules/
+socket.naturechat/dist/
+
+####################################
+# FRONT (NEXT.JS)
+####################################
+front.naturechat/node_modules/
+front.naturechat/.next/
+front.naturechat/out/
+front.naturechat/build/
+
+####################################
+# LARAVEL
+####################################
+api.naturechat/vendor/
+api.naturechat/node_modules/
+
+api.naturechat/storage/*.key
+api.naturechat/storage/framework/cache/*
+api.naturechat/storage/framework/sessions/*
+api.naturechat/storage/framework/views/*
+api.naturechat/storage/logs/*
+
+api.naturechat/bootstrap/cache/*
+
+####################################
+# LARAVEL MIX / VITE
+####################################
+api.naturechat/public/build/
+api.naturechat/public/hot/
+
+####################################
+# DATABASE
+####################################
+*.sqlite
+*.sqlite3
+
+####################################
+# TESTS / TEMP
+####################################
+coverage/
+tmp/
+temp/
