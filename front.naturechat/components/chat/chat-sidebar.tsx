@@ -37,11 +37,8 @@ interface ChatSidebarProps {
 export function ChatSidebar({ selectedChat, onSelectChat }: ChatSidebarProps) {
 
   const { data: meData } = useMe()
-  const { data: dataChats, isLoading } = useChatsUser()
+  const { data: dataChats, isLoading, refetch } = useChatsUser()
   const { mutate: logout } = useLogout()
-
-  console.log(dataChats)
-
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [user, setUser] = useState<{ name: string; phone: string; avatar?: string } | null>(null)
@@ -50,7 +47,19 @@ export function ChatSidebar({ selectedChat, onSelectChat }: ChatSidebarProps) {
 
   useEffect(() => {
     if (dataChats) setChats(dataChats)
-  }, [isLoading])
+  }, [dataChats])
+
+  useEffect(() => {
+    const handler = () => {
+      refetch()
+    }
+
+    socket.on("update_chats_list", handler)
+
+    return () => {
+      socket.off("update_chats_list", handler)
+    }
+  }, [refetch])
 
   useEffect(() => {
     if (!meData?.id) return;
@@ -109,7 +118,6 @@ export function ChatSidebar({ selectedChat, onSelectChat }: ChatSidebarProps) {
 
   useEffect(() => {
     const handler = (message: IMessage) => {
-      console.log(message)
       if (!message) return;
 
       setChats((prevChats) => {

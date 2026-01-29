@@ -8,6 +8,8 @@ use App\Http\Controllers\Phone\PhoneController;
 use App\Http\Middleware\JwtFromCookie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\RecoverPasswordController;
+use App\Http\Controllers\User\UserController;
 
 Route::post('login', [LoginController::class, 'login']);
 
@@ -26,13 +28,24 @@ Route::middleware(JwtFromCookie::class)->group(function () {
             Route::get('{chat}/participants', 'participants');
         });
 
-            //`http://localhost:8000/api/chats/${chatId}/participants`
+        //`http://localhost:8000/api/chats/${chatId}/participants`
         // 
 
-        Route::controller(ChatMessageController::class)->group(function() {
+        Route::controller(ChatMessageController::class)->group(function () {
             Route::get('{chat}/message', 'index');
             Route::post('message/create', 'store');
         });
-        
+    });
+
+    Route::prefix('recover-password')->controller(RecoverPasswordController::class)->group(function () {
+        Route::post('send-mail', 'sendMailRecovery');
+        Route::get('verify-token/{token}', 'verifyToken');
+        Route::post('create-new-password', 'createNewPassword');
+    });
+
+    Route::prefix('user')->group(function () {
+        Route::controller(UserController::class)->group(function () {
+            Route::post('create', 'store');
+        });
     });
 });

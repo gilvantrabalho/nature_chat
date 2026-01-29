@@ -12,6 +12,7 @@ import Link from "next/link"
 import { Eye, EyeOff } from "lucide-react"
 import { useLogin } from "@/hooks/use-login"
 import { toast } from "sonner"
+import { formatPhone } from "@/utils/number"
 
 export function LoginForm() {
 
@@ -22,20 +23,6 @@ export function LoginForm() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, "")
-
-    if (numbers.length <= 2) {
-      return numbers
-    } else if (numbers.length <= 3) {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`
-    } else if (numbers.length <= 7) {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3)}`
-    } else {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`
-    }
-  }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhone(e.target.value)
@@ -54,6 +41,7 @@ export function LoginForm() {
       {
         onSuccess: () => {
           router.push('/chat')
+          // window.location.href = '/chat'
         },
         onError: (error) => {
           toast.error('Credenciais inválidas!')

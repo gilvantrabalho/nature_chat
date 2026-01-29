@@ -1,45 +1,71 @@
-version: "3.9"
+version: "3.8"
 
 services:
-  api:
-    container_name: naturechat_api
-    build:
-      context: ./api.naturechat
-    volumes:
-      - ./api.naturechat:/var/www
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
     ports:
-      - "8000:8000"
-    command: php artisan serve --host=0.0.0.0 --port=8000
-    depends_on:
-      - mysql
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - naturechat_net
 
-  front:
-    container_name: naturechat_front
+  frontend:
     build:
       context: ./front.naturechat
+    container_name: naturechat_front
+    ports:
+      - "3000:3000"
     volumes:
       - ./front.naturechat:/app
       - /app/node_modules
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - api
+      - socket
+    networks:
+      - naturechat_net
 
-  mysql:
+  api:
+    build:
+      context: ./api.naturechat
+    container_name: naturechat_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api.naturechat:/var/www
+    depends_on:
+      - db
+      - mailhog
+    networks:
+      - naturechat_net
+
+  socket:
+    build:
+      context: ./socket.naturechat
+    container_name: naturechat_socket
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./socket.naturechat:/app
+      - /app/node_modules
+    networks:
+      - naturechat_net
+
+  db:
     image: mysql:8.0
-    container_name: naturechat_mysql
-    restart: always
+    container_name: naturechat_db
     environment:
       MYSQL_DATABASE: naturechat
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: naturechat
-      MYSQL_PASSWORD: secret
-    ports:
-      - "3307:3306"
+      MYSQL_PASSWORD: naturechat
     volumes:
-      - mysql_data:/var/lib/mysql
+      - dbdata:/var/lib/mysql
+    networks:
+      - naturechat_net
+
+networks:
+  naturechat_net:
 
 volumes:
-  mysql_data:
+  dbdata:

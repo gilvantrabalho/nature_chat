@@ -31,6 +31,7 @@ import io from "socket.io-client"
 import { useMe } from "@/hooks/use-me"
 import { getInitials } from "@/utils/use"
 import { useChatDisplay } from "@/hooks/use-participants"
+import { NewParticipantDialog } from "./new-participant-dialog"
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
@@ -277,12 +278,12 @@ export function ChatWindow({ chat, onBack }: ChatWindowProps) {
 
 
         <div className="flex items-center gap-0.5 shrink-0">
-          <Button variant="ghost" size="icon" className="rounded-full w-9 h-9">
+          {/* <Button variant="ghost" size="icon" className="rounded-full w-9 h-9">
             <Video className="w-5 h-5" />
           </Button>
           <Button variant="ghost" size="icon" className="rounded-full w-9 h-9">
             <Phone className="w-5 h-5" />
-          </Button>
+          </Button> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full w-9 h-9">
@@ -294,9 +295,11 @@ export function ChatWindow({ chat, onBack }: ChatWindowProps) {
                 <Search className="w-4 h-4 mr-2" />
                 Buscar mensagens
               </DropdownMenuItem>
-              <DropdownMenuItem>Informações do contato</DropdownMenuItem>
-              <DropdownMenuItem>Silenciar notificações</DropdownMenuItem>
-              <DropdownMenuItem>Limpar mensagens</DropdownMenuItem>
+              <DropdownMenuItem>
+                <NewParticipantDialog open={true} onOpenChange={() => {}} />
+              </DropdownMenuItem>
+              {/* <DropdownMenuItem>Silenciar notificações</DropdownMenuItem>
+              <DropdownMenuItem>Limpar mensagens</DropdownMenuItem> */}
               <DropdownMenuItem className="text-destructive">Bloquear</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

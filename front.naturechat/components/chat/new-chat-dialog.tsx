@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import InputLoading from "../input/input-loading"
 import { useVerifyPhone } from "@/hooks/use-phone"
-import formatPhone from "@/utils/number"
+import { formatPhone } from "@/utils/number"
 import { IChat, INewChatResponse } from "@/types/chat"
 import { Plus } from "lucide-react"
 import {
@@ -26,6 +26,10 @@ import { toast } from "sonner"
 import { IUserPhones } from "@/types/chat"
 import { useCreateNewChat } from "@/hooks/use-chat"
 import { Input } from "../ui/input"
+import io from "socket.io-client"
+import { useMe } from "@/hooks/use-me"
+
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
 interface NewChatDialogProps {
   open: boolean
@@ -36,6 +40,7 @@ interface NewChatDialogProps {
 export function NewChatDialog({ open, onOpenChange, onNewChat }: NewChatDialogProps) {
 
   const { mutate: createNewChat } = useCreateNewChat()
+  const { data: meData } = useMe()
 
   const [type, setType] = useState<string>("")
   const [name, setName] = useState<string>('')
@@ -53,6 +58,12 @@ export function NewChatDialog({ open, onOpenChange, onNewChat }: NewChatDialogPr
     const formatted = formatPhone(e.target.value)
     setPhone(formatted)
   }
+
+  useEffect(() => {
+    if (meData?.id) {
+      socket.emit("join_user", meData?.id);
+    }
+  }, [meData?.id])
 
   useEffect(() => {
     verifyNumber()
@@ -125,10 +136,14 @@ export function NewChatDialog({ open, onOpenChange, onNewChat }: NewChatDialogPr
     }, {
       onSuccess: (res) => {
         onNewChat(res.data)
+        socket.emit("update_chats");
         setSelectedUserPhones([])
         setPhone("")
         setMessage("")
         onOpenChange(false)
+      },
+      onError: () => {
+        socket.emit("update_chats");
       }
     })
   }
@@ -145,7 +160,7 @@ export function NewChatDialog({ open, onOpenChange, onNewChat }: NewChatDialogPr
         item => item.phone === verifiedPhone.phone
       )
 
-      if (alreadyExists) return prev // não adiciona duplicado
+      if (alreadyExists) return prev
 
       return [...prev, verifiedPhone]
     })

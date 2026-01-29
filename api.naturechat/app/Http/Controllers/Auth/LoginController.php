@@ -35,11 +35,11 @@ class LoginController extends Controller
             ->cookie(
                 'token',
                 $token,
-                $guard->factory()->getTTL(),
+                config('jwt.ttl'),
                 '/',
-                'localhost',
+                null,   // 👈 deixa null em dev
                 false,
-                true,
+                true,   // httpOnly
                 false,
                 'lax'
             );

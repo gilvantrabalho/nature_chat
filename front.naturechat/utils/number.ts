@@ -1,4 +1,4 @@
-export default function formatPhone(value: string = '') {
+export function formatPhone(value: string = '') {
     const numbers = value.replace(/\D/g, "")
 
     if (numbers.length <= 2) {

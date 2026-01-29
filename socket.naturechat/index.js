@@ -10,7 +10,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: ["http://localhost:3000", "http://frontend:3000"],
         methods: ["GET", "POST"],
     },
 });
@@ -19,7 +19,6 @@ io.on("connection", (socket) => {
 
     socket.on("join_chat", (chatId) => {
         socket.join(`chat_${chatId}`);
-        // console.log(`Socket ${socket.id} entrou no chat ${chatId}`);
     });
 
     socket.on("leave_chat", (chatId) => {
@@ -38,12 +37,15 @@ io.on("connection", (socket) => {
         });
     });
 
+    socket.on("update_chats", () => {
+        io.emit("update_chats_list");
+    });
+
     socket.on("disconnect", () => {
         console.log("Usuário desconectado", socket.id);
     });
 });
 
-
 server.listen(3001, () => {
-    console.log("SERVIDOR RODANDO NA PORTA 3001");
+  console.log("Socket rodando na porta 3001");
 });

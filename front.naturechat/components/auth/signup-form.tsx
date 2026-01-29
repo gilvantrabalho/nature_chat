@@ -9,30 +9,22 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff } from "lucide-react"
+import { formatPhone } from "@/utils/number"
+import { useCreateUser } from "@/hooks/use-user"
 
 export function SignupForm() {
+
+  const { mutate: createUser } = useCreateUser()
+
   const router = useRouter()
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, "")
-
-    if (numbers.length <= 2) {
-      return numbers
-    } else if (numbers.length <= 3) {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`
-    } else if (numbers.length <= 7) {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3)}`
-    } else {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`
-    }
-  }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhone(e.target.value)
@@ -61,11 +53,25 @@ export function SignupForm() {
 
     setIsLoading(true)
 
-    // Simulação de cadastro - posteriormente conectar ao backend
-    setTimeout(() => {
-      localStorage.setItem("user", JSON.stringify({ phone, name }))
-      router.push("/chat")
-    }, 1000)
+    createUser({
+      name: name,
+      email: email,
+      telephone: phoneNumbers,
+      password: password,
+      confirm_password: confirmPassword
+    }, {
+      onSuccess: () => {
+        router.push("/")
+      },
+      onError: (err: any) => {
+        setIsLoading(false)
+        setError(err.response?.data?.message || "Erro ao criar conta")
+      },
+      onSettled: () => {
+        setIsLoading(false)
+      }
+    })
+
   }
 
   return (
@@ -80,6 +86,19 @@ export function SignupForm() {
               placeholder="Seu nome"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">E-mail</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Seu melhor e-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="bg-background"
             />

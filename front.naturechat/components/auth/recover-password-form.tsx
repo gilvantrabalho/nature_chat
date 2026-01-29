@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle2 } from "lucide-react"
+import { send } from "process"
+import { setMailRecoverPassword } from "@/hooks/use-recover-password"
+import { toast } from "sonner"
 
 export function RecoverPasswordForm() {
   const [email, setEmail] = useState("")
@@ -18,11 +21,16 @@ export function RecoverPasswordForm() {
     e.preventDefault()
     setIsLoading(true)
 
-    // Simulação de envio de email - posteriormente conectar ao backend
-    setTimeout(() => {
-      setIsLoading(false)
-      setSent(true)
-    }, 1500)
+    await setMailRecoverPassword(email)
+      .then(res => {
+        setSent(true)
+      })
+      .catch(err => {
+        toast.error(err.response.data.message || "Erro ao enviar email de recuperação")
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   if (sent) {

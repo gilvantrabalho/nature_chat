@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get('token')
+    const token = request.cookies.get('token')?.value
 
-    const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
-    const isPrivateRoute = request.nextUrl.pathname.startsWith('/chat')
+    const pathname = request.nextUrl.pathname
+    const isAuthRoute = pathname.startsWith('/login')
+    const isPrivateRoute = pathname.startsWith('/chat')
 
     // não logado tentando acessar rota privada
     if (!token && isPrivateRoute) {
